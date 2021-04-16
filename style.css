@@ -67,8 +67,9 @@ h3{
 }
 #information {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   height: 100%;
   width: 15%;
   background-color: grey;
@@ -86,10 +87,29 @@ h3{
   display: none;
 }
 .destroyer {
-  display: flex;
   width: 20px;
   height: 40px;
   background-color: green;
+}
+.submarine {
+  width: 20px;
+  height: 60px;
+  background-color: yellow;
+}
+.cruiser {
+  width: 20px;
+  height: 60px;
+  background-color: pink;
+}
+.battleship {
+  width: 20px;
+  height: 80px;
+  background-color: purple;
+}
+.carrier {
+  width: 20px;
+  height: 100px;
+  background-color: brown;
 }
 
 .sea{

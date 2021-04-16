@@ -4,10 +4,11 @@ const computerTiles = document.querySelector('#computer-board')
 const startButton = document.querySelector('#start')
 const welcome = document.querySelector('#welcome')
 const shipPlacement = document.querySelector('#shipPlacement')
-const destroyer = document.querySelector('destroyer')
+const shipShownInInfo = document.querySelector('.shipShown')
 const width = 10
 const playerTilesArray = []
 const computerTilesArray = []
+let gameStarted = false
 
 
 // Calls the grid funciton to make a grid on both boards
@@ -22,6 +23,9 @@ const shipNames = ['destroyer', 'submarine', 'cruiser', 'battleship', 'carrier']
 const shipSizes = [2, 3, 3, 4, 5]
 let shipSizeIndex = 0
 let direction = 0
+const indexWithAllPlayerShipPositions = []
+const indexWithAllComputerShipPositions = []
+let playerShips = true
 
 // Creates a grid
 function createGrid(grid) {
@@ -57,7 +61,37 @@ startButton.addEventListener('click', () => {
   welcome.style.display = 'none'
   shipPlacement.style.display = 'block'
   // Allows the player to start placing ships
-  planningMode = true
+  // confirms the placement of the ship and displays the next one that will be placed
+  if (shipHasBeenPlaced && planningMode) {
+    shipHasBeenPlaced = false
+    confirmPlacement()
+    indexToAddShipsToo = []
+    if (shipSizeIndex === shipSizes.length - 1) {
+      startButton.innerHTML = 'Confirm Placement and start battle'
+    }
+    // When the player has placed all their ships
+    if (shipSizeIndex === shipSizes.length) {
+      shipSizeIndex = 0
+      playerShips = false
+      placeComputerShips()
+      planningMode = false
+      battleMode = true
+      startButton.innerHTML = 'Confirm Shot'
+    }
+  } else if (!shipHasBeenPlaced && planningMode) {
+    console.log('You need to place a ship first')
+  }
+  if (!gameStarted) {
+    gameStarted = true
+    shipShownInInfo.classList.add(shipNames[shipSizeIndex])
+    startButton.innerHTML = 'Confirm Placement'
+  }
+  if (!battleMode) {
+    planningMode = true
+  }
+  if (battleMode) {
+    console.log(indexWithAllPlayerShipPositions)
+  }
 })
 
 
@@ -70,19 +104,36 @@ function placeShip(divIndex) {
     divIndex = rotation(divIndex)
     indexToAddShipsToo.push(divIndex)
   }
-  const invalidPlacement = indexToAddShipsToo.some((index) => {
-    return playerTilesArray[index] === undefined
-  })
-  if (invalidPlacement) {
-    console.log('Cant be placed here')
-    indexToAddShipsToo = incaseError
-  } else if (checkLoopsLeftOrRight()) {
-    console.log('Cant be placed here')
-    indexToAddShipsToo = incaseError
+  if (playerShips) {
+    const invalidPlacement = indexToAddShipsToo.some((index) => {
+      return playerTilesArray[index] === undefined || playerTilesArray[index].classList.contains('ship')
+    })
+    if (invalidPlacement) {
+      console.log('Cant be placed here')
+      indexToAddShipsToo = incaseError
+    } else if (checkLoopsLeftOrRight()) {
+      console.log('Cant be placed here')
+      indexToAddShipsToo = incaseError
+    }
+    indexToAddShipsToo.forEach((index) => {
+      playerTilesArray[index].classList.add(shipNames[shipSizeIndex])
+    })
+  } else {
+    const invalidPlacement = indexToAddShipsToo.some((index) => {
+      return computerTilesArray[index] === undefined || computerTilesArray[index].classList.contains('ship')
+    })
+    if (invalidPlacement) {
+      console.log('Cant be placed here')
+      indexToAddShipsToo = incaseError
+    } else if (checkLoopsLeftOrRight()) {
+      console.log('Cant be placed here')
+      indexToAddShipsToo = incaseError
+    }
+    // This code below shows the location of the computer ships
+    indexToAddShipsToo.forEach((index) => {
+      computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
+    })
   }
-  indexToAddShipsToo.forEach((index) => {
-    playerTilesArray[index].classList.add(shipNames[shipSizeIndex])
-  })
 
 }
 
@@ -144,3 +195,36 @@ function checkLoopsLeftOrRight() {
   }
   return wrapfound
 }
+// function that confirms the placement of the ships
+function confirmPlacement() {
+  shipShownInInfo.classList.remove(shipNames[shipSizeIndex])
+  shipSizeIndex++
+  shipShownInInfo.classList.add(shipNames[shipSizeIndex])
+  indexWithAllPlayerShipPositions.push(indexToAddShipsToo)
+  indexToAddShipsToo.forEach((index) => {
+    playerTilesArray[index].classList.add('ship')
+  })
+}
+
+function placeComputerShips() {
+  indexToAddShipsToo = []
+  direction = Math.floor(Math.random() * 4)
+  const randomIndex = Math.floor(Math.random() * computerTilesArray.length)
+  placeShip(randomIndex)
+  if (indexToAddShipsToo.length >= 2) {
+    indexToAddShipsToo.forEach((index) => {
+      computerTilesArray[index].classList.add('ship')
+    })
+    indexWithAllComputerShipPositions.push(indexToAddShipsToo)
+    shipSizeIndex++
+  }
+  if (shipSizeIndex < shipNames.length) {
+    placeComputerShips()
+  } else {
+    console.log(indexWithAllComputerShipPositions, 'comp positons')
+  }
+}
+
+
+// Battle mode
+let battleMode = false
