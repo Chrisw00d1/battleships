@@ -62,6 +62,9 @@ startButton.addEventListener('click', () => {
   shipPlacement.style.display = 'block'
   // Allows the player to start placing ships
   // confirms the placement of the ship and displays the next one that will be placed
+  if (indexToAddShipsToo.length < 2) {
+    shipHasBeenPlaced = false
+  }
   if (shipHasBeenPlaced && planningMode) {
     shipHasBeenPlaced = false
     confirmPlacement()
