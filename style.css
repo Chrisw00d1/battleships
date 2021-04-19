@@ -15,6 +15,9 @@ h1 {
   text-transform: uppercase;
   flex: 1;
 }
+p {
+  text-align: center;
+}
 main {
   flex: 9;
   width: 90%;
@@ -80,35 +83,58 @@ h3{
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
-
+strong {
+  font-size: 30px;
+}
 #shipPlacement {
   display: none;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: 90%;
+}
+
+#shipDisplay {
+  background-color: aqua;
+  height: 50%;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#nameToDisplay {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+#lengthToDisplay {
+  font-weight: bold;
 }
 .destroyer {
-  width: 20px;
-  height: 40px;
+  width: 30px;
+  height: 60px;
   background-color: green;
 }
 .submarine {
-  width: 20px;
-  height: 60px;
+  width: 30px;
+  height: 90px;
   background-color: yellow;
 }
 .cruiser {
-  width: 20px;
-  height: 60px;
+  width: 30px;
+  height: 90px;
   background-color: pink;
 }
 .battleship {
-  width: 20px;
-  height: 80px;
+  width: 30px;
+  height: 120px;
   background-color: purple;
 }
 .carrier {
-  width: 20px;
-  height: 100px;
+  width: 30px;
+  height: 150px;
   background-color: brown;
 }
 
@@ -119,4 +145,18 @@ h3{
 }
 .sea:hover{
  background-color: red;
+}
+.selected {
+  background-color: red;
+}
+
+.miss {
+  width: 100px;
+  height: 100px;
+  background: white;
+  border-radius: 50%
+}
+.hit {
+  background: red;
+  border-radius: 50%
 }

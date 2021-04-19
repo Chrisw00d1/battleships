@@ -2,9 +2,15 @@
 const playerTiles = document.querySelector('#player-board')
 const computerTiles = document.querySelector('#computer-board')
 const startButton = document.querySelector('#start')
+// displays in the information
 const welcome = document.querySelector('#welcome')
 const shipPlacement = document.querySelector('#shipPlacement')
 const shipShownInInfo = document.querySelector('.shipShown')
+const nameToDisplay = document.querySelector('#nameToDisplay')
+const lengthToDisplay = document.querySelector('#lengthToDisplay')
+const placementError = document.querySelector('#placementError')
+const displayDirection = document.querySelector('#direction')
+
 const width = 10
 const playerTilesArray = []
 const computerTilesArray = []
@@ -26,6 +32,7 @@ let direction = 0
 const indexWithAllPlayerShipPositions = []
 const indexWithAllComputerShipPositions = []
 let playerShips = true
+const directions = ['Down', 'Left', 'Up', 'Right']
 
 // Creates a grid
 function createGrid(grid) {
@@ -52,14 +59,26 @@ function createGrid(grid) {
       computerTiles.appendChild(tile)
       computerTilesArray.push(tile)
       // Add what happends when you click the computers divs
+      tile.addEventListener('click', () => {
+        if (battleMode) {
+          if (tileToShoot) {
+            removePreviousSelected()
+          }
+          if (tile.classList.contains('hit') || tile.classList.contains('miss')) {
+            console.log('You have already fired here')
+          } else {
+            selectTile(Number(tile.innerHTML))
+            tileToShoot = true
+          }
+        }
+      })
     }
   }
 }
 
-// What happens when you push the start button
+// What happens when you push the start button / placement button / confirm shot button
 startButton.addEventListener('click', () => {
   welcome.style.display = 'none'
-  shipPlacement.style.display = 'block'
   // Allows the player to start placing ships
   // confirms the placement of the ship and displays the next one that will be placed
   if (indexToAddShipsToo.length < 2) {
@@ -70,7 +89,7 @@ startButton.addEventListener('click', () => {
     confirmPlacement()
     indexToAddShipsToo = []
     if (shipSizeIndex === shipSizes.length - 1) {
-      startButton.innerHTML = 'Confirm Placement and start battle'
+      startButton.innerHTML = 'Confirm placement and start battle'
     }
     // When the player has placed all their ships
     if (shipSizeIndex === shipSizes.length) {
@@ -81,19 +100,33 @@ startButton.addEventListener('click', () => {
       battleMode = true
       startButton.innerHTML = 'Confirm Shot'
     }
+    placementError.innerHTML = ''
+    // The player hasn't placed a ship yet
   } else if (!shipHasBeenPlaced && planningMode) {
-    console.log('You need to place a ship first')
+    placementError.innerHTML = 'You need to place a ship first'
   }
   if (!gameStarted) {
     gameStarted = true
     shipShownInInfo.classList.add(shipNames[shipSizeIndex])
-    startButton.innerHTML = 'Confirm Placement'
+    startButton.innerHTML = 'Confirm placement'
+    displayDirection.innerHTML = `Direction: ${directions[direction]}`
   }
-  if (!battleMode) {
+  // Displaying the information of the ships in the middle block
+  if (!battleMode && !gameWon) {
+    nameToDisplay.innerHTML = `${shipNames[shipSizeIndex]}`
+    lengthToDisplay.innerHTML = `LENGTH: ${shipSizes[shipSizeIndex]}`
     planningMode = true
+    shipPlacement.style.display = 'flex'
   }
+  // Confirm shot
   if (battleMode) {
-    console.log(indexWithAllPlayerShipPositions)
+    shipPlacement.style.display = 'none'
+    if (tileToShoot) {
+      makeShot('player')
+      if (!gameWon) {
+        makeShot('computer')
+      }
+    }
   }
 })
 
@@ -112,10 +145,10 @@ function placeShip(divIndex) {
       return playerTilesArray[index] === undefined || playerTilesArray[index].classList.contains('ship')
     })
     if (invalidPlacement) {
-      console.log('Cant be placed here')
+      placementError.innerHTML = 'Cannot be placed here'
       indexToAddShipsToo = incaseError
     } else if (checkLoopsLeftOrRight()) {
-      console.log('Cant be placed here')
+      placementError.innerHTML = 'Cannot be placed here'
       indexToAddShipsToo = incaseError
     }
     indexToAddShipsToo.forEach((index) => {
@@ -126,13 +159,11 @@ function placeShip(divIndex) {
       return computerTilesArray[index] === undefined || computerTilesArray[index].classList.contains('ship')
     })
     if (invalidPlacement) {
-      console.log('Cant be placed here')
       indexToAddShipsToo = incaseError
     } else if (checkLoopsLeftOrRight()) {
-      console.log('Cant be placed here')
       indexToAddShipsToo = incaseError
     }
-    // This code below shows the location of the computer ships
+    // This code below shows the location of the computer ships comment it out to hide it for the actual game
     indexToAddShipsToo.forEach((index) => {
       computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
     })
@@ -152,6 +183,7 @@ document.addEventListener('keydown', (event) => {
       removePreviousPlacement()
       placeShip(indexToAddShipsToo[0])
     }
+    displayDirection.innerHTML = `Direction: ${directions[direction]}`
   }
 })
 
@@ -231,3 +263,67 @@ function placeComputerShips() {
 
 // Battle mode
 let battleMode = false
+let tileToShoot = false
+let selectedTile
+let playerScore = 0
+let computerScore = 0
+let gameWon = false
+
+// Removes the previous selected tile by the user
+function removePreviousSelected() {
+  computerTilesArray[selectedTile].classList.remove('selected')
+}
+
+function selectTile(index) {
+  selectedTile = index
+  computerTilesArray[index].classList.add('selected')
+}
+// either the player or the computer makes a shot
+function makeShot(shooter) {
+  if (shooter === 'player') {
+    if (computerTilesArray[selectedTile].classList.contains('ship')) {
+      computerTilesArray[selectedTile].classList.add('hit')
+      console.log('player hit')
+      playerScore ++
+    } else {
+      computerTilesArray[selectedTile].classList.add('miss')
+      console.log('player miss')
+    }
+    tileToShoot = false
+    removePreviousSelected()
+    selectedTile = null
+  } else {
+    computerShot()
+  }
+  checkWin()
+}
+// Selects the index where the computer will shoot
+function computerShot() {
+  const randomShotIndex = Math.floor(Math.random() * playerTilesArray.length)
+  if (playerTilesArray[randomShotIndex].classList.contains('hit') || playerTilesArray[randomShotIndex].classList.contains('miss')) {
+    computerShot()
+  } else {
+    if (playerTilesArray[randomShotIndex].classList.contains('ship')) {
+      playerTilesArray[randomShotIndex].classList.add('hit')
+      console.log('computer hit')
+      computerScore ++
+    } else {
+      playerTilesArray[randomShotIndex].classList.add('miss')
+      console.log('computer miss')
+    }
+  }
+}
+// Checks to see if anyone has won the game
+function checkWin() {
+  if (playerScore === 17) {
+    gameWon = true
+    battleMode = false
+    console.log('The player wins')
+    startButton.innerHTML = 'Play again'
+  } else if (computerScore === 17) {
+    gameWon = true
+    battleMode = false
+    console.log('The computer wins')
+    startButton.innerHTML = 'Play again'
+  }
+}
