@@ -112,6 +112,47 @@ strong {
 #lengthToDisplay {
   font-weight: bold;
 }
+#battleStage {
+  display: none;
+  height: 80%;
+  width: 80%;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+#playershots {
+  width: 100%;
+  height: 40%;
+}
+#displayPlayShot {
+  height: 50%;
+  width: 100%;
+  background-color: aqua;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+}
+#playerHitOrMiss {
+  text-transform: uppercase;
+}
+
+#computershots {
+  width: 100%;
+  height: 40%;
+}
+#displayCompShot {
+  height: 50%;
+  width: 100%;
+  background-color: aqua;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+}
+#compHitOrMiss {
+  text-transform: uppercase;
+}
+
 .destroyer {
   width: 30px;
   height: 60px;
@@ -140,9 +181,12 @@ strong {
 
 .sea{
   border: 1px solid black;
+  font-size: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#destroyerPart-1 {
-}
+
 .sea:hover{
  background-color: red;
 }
@@ -150,13 +194,13 @@ strong {
   background-color: red;
 }
 
+span {
+  font-size: 25px;
+}
+
 .miss {
-  width: 100px;
-  height: 100px;
-  background: white;
-  border-radius: 50%
+  color: white;
 }
 .hit {
-  background: red;
-  border-radius: 50%
+  color: red;
 }

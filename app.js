@@ -4,12 +4,24 @@ const computerTiles = document.querySelector('#computer-board')
 const startButton = document.querySelector('#start')
 // displays in the information
 const welcome = document.querySelector('#welcome')
+// info for ship placement
 const shipPlacement = document.querySelector('#shipPlacement')
 const shipShownInInfo = document.querySelector('.shipShown')
 const nameToDisplay = document.querySelector('#nameToDisplay')
 const lengthToDisplay = document.querySelector('#lengthToDisplay')
 const placementError = document.querySelector('#placementError')
 const displayDirection = document.querySelector('#direction')
+// info for battle stuff
+const battleStage = document.querySelector('#battleStage')
+const displayPlayShot = document.querySelector('#displayPlayShot')
+const displayCompShot = document.querySelector('#displayCompShot')
+const playerHitOrMiss = document.querySelector('#playerHitOrMiss')
+const computerHitOrMiss = document.querySelector('#compHitOrMiss')
+const computerIsFiring = document.querySelector('#computerIsFiring')
+// winning screen
+const winningScreen = document.querySelector('#winningScreen')
+const whoWon = document.querySelector('#whoWon')
+
 
 const width = 10
 const playerTilesArray = []
@@ -99,6 +111,7 @@ startButton.addEventListener('click', () => {
       planningMode = false
       battleMode = true
       startButton.innerHTML = 'Confirm Shot'
+      battleStage.style.display = 'flex'
     }
     placementError.innerHTML = ''
     // The player hasn't placed a ship yet
@@ -119,12 +132,30 @@ startButton.addEventListener('click', () => {
     shipPlacement.style.display = 'flex'
   }
   // Confirm shot
+  if (gameWon) {
+    resetGame()
+  }
   if (battleMode) {
     shipPlacement.style.display = 'none'
-    if (tileToShoot) {
+    if (tileToShoot && !shotFired) {
+      shotFired = true
       makeShot('player')
       if (!gameWon) {
-        makeShot('computer')
+        // ADD COMPUTER IS WAITING HERE
+        let intervalCounter = 0
+        computerIsFiring.innerHTML = 'The Computer is firing'
+        const intervalId = setInterval(() => {
+          if (intervalCounter < 3) {
+            computerIsFiring.innerHTML += '.'
+          }
+          if (intervalCounter === 3) {
+            clearInterval(intervalId)
+            makeShot('computer')
+            computerIsFiring.innerHTML = ''
+            shotFired = false
+          }
+          intervalCounter++
+        }, 400)
       }
     }
   }
@@ -268,6 +299,7 @@ let selectedTile
 let playerScore = 0
 let computerScore = 0
 let gameWon = false
+let shotFired = false
 
 // Removes the previous selected tile by the user
 function removePreviousSelected() {
@@ -280,50 +312,117 @@ function selectTile(index) {
 }
 // either the player or the computer makes a shot
 function makeShot(shooter) {
+  const cross = document.createElement('span')
+  cross.innerHTML = 'X'
   if (shooter === 'player') {
     if (computerTilesArray[selectedTile].classList.contains('ship')) {
       computerTilesArray[selectedTile].classList.add('hit')
-      console.log('player hit')
-      playerScore ++
+      computerTilesArray[selectedTile].appendChild(cross)
+      displayShots('player', 'hit')
+      playerScore++
     } else {
       computerTilesArray[selectedTile].classList.add('miss')
-      console.log('player miss')
+      computerTilesArray[selectedTile].appendChild(cross)
+      displayShots('player', 'miss')
     }
     tileToShoot = false
     removePreviousSelected()
     selectedTile = null
   } else {
-    computerShot()
+    computerShot(cross)
   }
   checkWin()
 }
 // Selects the index where the computer will shoot
-function computerShot() {
+function computerShot(cross) {
   const randomShotIndex = Math.floor(Math.random() * playerTilesArray.length)
   if (playerTilesArray[randomShotIndex].classList.contains('hit') || playerTilesArray[randomShotIndex].classList.contains('miss')) {
-    computerShot()
+    computerShot(cross)
   } else {
     if (playerTilesArray[randomShotIndex].classList.contains('ship')) {
       playerTilesArray[randomShotIndex].classList.add('hit')
-      console.log('computer hit')
-      computerScore ++
+      playerTilesArray[randomShotIndex].appendChild(cross)
+      displayShots('computer', 'hit')
+      computerScore++
     } else {
       playerTilesArray[randomShotIndex].classList.add('miss')
-      console.log('computer miss')
+      playerTilesArray[randomShotIndex].appendChild(cross)
+      displayShots('computer', 'miss')
     }
   }
 }
 // Checks to see if anyone has won the game
 function checkWin() {
-  if (playerScore === 17) {
+  if (playerScore === 17 || computerScore === 17) {
     gameWon = true
     battleMode = false
-    console.log('The player wins')
+    battleStage.style.display = 'none'
+    winningScreen.style.display = 'block'
     startButton.innerHTML = 'Play again'
-  } else if (computerScore === 17) {
-    gameWon = true
-    battleMode = false
-    console.log('The computer wins')
-    startButton.innerHTML = 'Play again'
+    if (playerScore === 17) {
+      whoWon.innerHTML = 'You Win!'
+    } else {
+      whoWon.innerHTML = 'You Lose!'
+    }
   }
+}
+// function that displays the information into the main grid about the shots
+function displayShots(user, result) {
+  if (user === 'player') {
+    displayPlayShot.classList.remove('hit')
+    displayPlayShot.classList.remove('miss')
+    displayPlayShot.innerHTML = 'X'
+    displayPlayShot.classList.add(`${result}`)
+    playerHitOrMiss.innerHTML = `${result}`
+  } else {
+    displayCompShot.classList.remove('hit')
+    displayCompShot.classList.remove('miss')
+    displayCompShot.innerHTML = 'X'
+    displayCompShot.classList.add(`${result}`)
+    computerHitOrMiss.innerHTML = `${result}`
+  }
+}
+
+// function to reset the game to play again
+function resetGame() {
+  gameWon = false
+  gameStarted = false
+  winningScreen.style.display = 'none'
+  welcome.style.display = 'flex'
+  shipSizeIndex = 0
+  playerShips = true
+  indexToAddShipsToo = []
+  tileToShoot = false
+  shotFired = false
+  playerScore = 0
+  computerScore = 0
+  displayPlayShot.innerHTML = ''
+  displayCompShot.innerHTML = ''
+  const allSpan = Array.from(document.querySelectorAll('span'))
+  allSpan.forEach((xSpan) => {
+    xSpan.remove()
+  })
+  displayPlayShot.innerHTML = ''
+  displayCompShot.innerHTML = ''
+  startButton.innerHTML = 'Start'
+  playerTilesArray.forEach((tile) => {
+    tile.classList.remove('hit')
+    tile.classList.remove('miss')
+    tile.classList.remove('destroyer')
+    tile.classList.remove('submarine')
+    tile.classList.remove('cruiser')
+    tile.classList.remove('battleship')
+    tile.classList.remove('carrier')
+    tile.classList.remove('ship')
+  })
+  computerTilesArray.forEach((tile) => {
+    tile.classList.remove('hit')
+    tile.classList.remove('miss')
+    tile.classList.remove('destroyer')
+    tile.classList.remove('submarine')
+    tile.classList.remove('cruiser')
+    tile.classList.remove('battleship')
+    tile.classList.remove('carrier')
+    tile.classList.remove('ship')
+  })
 }
