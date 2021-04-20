@@ -36,13 +36,13 @@ createGrid('computer')
 // Player chooses where to place the ships
 let planningMode = false
 let shipHasBeenPlaced = false
-let indexToAddShipsToo = []
+let indexToAddShipsTo = []
 const shipNames = ['destroyer', 'submarine', 'cruiser', 'battleship', 'carrier']
 const shipSizes = [2, 3, 3, 4, 5]
 let shipSizeIndex = 0
 let direction = 0
-const indexWithAllPlayerShipPositions = []
-const indexWithAllComputerShipPositions = []
+let indexWithAllPlayerShipPositions = []
+let indexWithAllComputerShipPositions = []
 let playerShips = true
 const directions = ['Down', 'Left', 'Up', 'Right']
 
@@ -93,13 +93,13 @@ startButton.addEventListener('click', () => {
   welcome.style.display = 'none'
   // Allows the player to start placing ships
   // confirms the placement of the ship and displays the next one that will be placed
-  if (indexToAddShipsToo.length < 2) {
+  if (indexToAddShipsTo.length < 2) {
     shipHasBeenPlaced = false
   }
   if (shipHasBeenPlaced && planningMode) {
     shipHasBeenPlaced = false
     confirmPlacement()
-    indexToAddShipsToo = []
+    indexToAddShipsTo = []
     if (shipSizeIndex === shipSizes.length - 1) {
       startButton.innerHTML = 'Confirm placement and start battle'
     }
@@ -131,10 +131,10 @@ startButton.addEventListener('click', () => {
     planningMode = true
     shipPlacement.style.display = 'flex'
   }
-  // Confirm shot
   if (gameWon) {
     resetGame()
   }
+  // Confirm shot
   if (battleMode) {
     shipPlacement.style.display = 'none'
     if (tileToShoot && !shotFired) {
@@ -164,38 +164,38 @@ startButton.addEventListener('click', () => {
 
 // Planning Mode to place a ship with checks
 function placeShip(divIndex) {
-  const incaseError = indexToAddShipsToo
-  indexToAddShipsToo = []
-  indexToAddShipsToo.push(divIndex)
+  const incaseError = indexToAddShipsTo
+  indexToAddShipsTo = []
+  indexToAddShipsTo.push(divIndex)
   for (let i = 0; i < shipSizes[shipSizeIndex] - 1; i++) {
     divIndex = rotation(divIndex)
-    indexToAddShipsToo.push(divIndex)
+    indexToAddShipsTo.push(divIndex)
   }
   if (playerShips) {
-    const invalidPlacement = indexToAddShipsToo.some((index) => {
+    const invalidPlacement = indexToAddShipsTo.some((index) => {
       return playerTilesArray[index] === undefined || playerTilesArray[index].classList.contains('ship')
     })
     if (invalidPlacement) {
       placementError.innerHTML = 'Cannot be placed here'
-      indexToAddShipsToo = incaseError
+      indexToAddShipsTo = incaseError
     } else if (checkLoopsLeftOrRight()) {
       placementError.innerHTML = 'Cannot be placed here'
-      indexToAddShipsToo = incaseError
+      indexToAddShipsTo = incaseError
     }
-    indexToAddShipsToo.forEach((index) => {
+    indexToAddShipsTo.forEach((index) => {
       playerTilesArray[index].classList.add(shipNames[shipSizeIndex])
     })
   } else {
-    const invalidPlacement = indexToAddShipsToo.some((index) => {
+    const invalidPlacement = indexToAddShipsTo.some((index) => {
       return computerTilesArray[index] === undefined || computerTilesArray[index].classList.contains('ship')
     })
     if (invalidPlacement) {
-      indexToAddShipsToo = incaseError
+      indexToAddShipsTo = incaseError
     } else if (checkLoopsLeftOrRight()) {
-      indexToAddShipsToo = incaseError
+      indexToAddShipsTo = incaseError
     }
     // This code below shows the location of the computer ships comment it out to hide it for the actual game
-    indexToAddShipsToo.forEach((index) => {
+    indexToAddShipsTo.forEach((index) => {
       computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
     })
   }
@@ -212,7 +212,7 @@ document.addEventListener('keydown', (event) => {
     }
     if (shipHasBeenPlaced) {
       removePreviousPlacement()
-      placeShip(indexToAddShipsToo[0])
+      placeShip(indexToAddShipsTo[0])
     }
     displayDirection.innerHTML = `Direction: ${directions[direction]}`
   }
@@ -238,26 +238,26 @@ function rotation(divIndex) {
 
 // Delete previous placement of the ship
 function removePreviousPlacement() {
-  indexToAddShipsToo.forEach((index) => {
+  indexToAddShipsTo.forEach((index) => {
     playerTilesArray[index].classList.remove(shipNames[shipSizeIndex])
   })
 }
 
 // checks to see if the ship wraps around the grid
 function checkLoopsLeftOrRight() {
-  let comparing = indexToAddShipsToo[0]
+  let comparing = indexToAddShipsTo[0]
   let wrapfound = false
-  for (let i = 1; i < indexToAddShipsToo.length; i++) {
+  for (let i = 1; i < indexToAddShipsTo.length; i++) {
     if (comparing % 10 === 0) {
-      if (indexToAddShipsToo[i] === comparing - 1) {
+      if (indexToAddShipsTo[i] === comparing - 1) {
         wrapfound = true
       }
-    } else if (indexToAddShipsToo[i] % 10 === 0) {
-      if (indexToAddShipsToo[i] === comparing + 1) {
+    } else if (indexToAddShipsTo[i] % 10 === 0) {
+      if (indexToAddShipsTo[i] === comparing + 1) {
         wrapfound = true
       }
     }
-    comparing = indexToAddShipsToo[i]
+    comparing = indexToAddShipsTo[i]
   }
   return wrapfound
 }
@@ -266,22 +266,22 @@ function confirmPlacement() {
   shipShownInInfo.classList.remove(shipNames[shipSizeIndex])
   shipSizeIndex++
   shipShownInInfo.classList.add(shipNames[shipSizeIndex])
-  indexWithAllPlayerShipPositions.push(indexToAddShipsToo)
-  indexToAddShipsToo.forEach((index) => {
+  indexWithAllPlayerShipPositions.push(indexToAddShipsTo)
+  indexToAddShipsTo.forEach((index) => {
     playerTilesArray[index].classList.add('ship')
   })
 }
 
 function placeComputerShips() {
-  indexToAddShipsToo = []
+  indexToAddShipsTo = []
   direction = Math.floor(Math.random() * 4)
   const randomIndex = Math.floor(Math.random() * computerTilesArray.length)
   placeShip(randomIndex)
-  if (indexToAddShipsToo.length >= 2) {
-    indexToAddShipsToo.forEach((index) => {
+  if (indexToAddShipsTo.length >= 2) {
+    indexToAddShipsTo.forEach((index) => {
       computerTilesArray[index].classList.add('ship')
     })
-    indexWithAllComputerShipPositions.push(indexToAddShipsToo)
+    indexWithAllComputerShipPositions.push(indexToAddShipsTo)
     shipSizeIndex++
   }
   if (shipSizeIndex < shipNames.length) {
@@ -300,6 +300,7 @@ let playerScore = 0
 let computerScore = 0
 let gameWon = false
 let shotFired = false
+let previousHit = []
 
 // Removes the previous selected tile by the user
 function removePreviousSelected() {
@@ -318,12 +319,17 @@ function makeShot(shooter) {
     if (computerTilesArray[selectedTile].classList.contains('ship')) {
       computerTilesArray[selectedTile].classList.add('hit')
       computerTilesArray[selectedTile].appendChild(cross)
-      displayShots('player', 'hit')
+      const shipSunk = hasShipBeenDestroyed('player')
+      if (shipSunk[0]) {
+        displayShots('player', 'hit', shipSunk[1])
+      } else {
+        displayShots('player', 'hit', undefined)
+      }
       playerScore++
     } else {
       computerTilesArray[selectedTile].classList.add('miss')
       computerTilesArray[selectedTile].appendChild(cross)
-      displayShots('player', 'miss')
+      displayShots('player', 'miss', undefined)
     }
     tileToShoot = false
     removePreviousSelected()
@@ -333,24 +339,115 @@ function makeShot(shooter) {
   }
   checkWin()
 }
-// Selects the index where the computer will shoot
+// Selects the index where the computer will shoot where 
+// cross is just the span that gets added to tile picked by the computer
 function computerShot(cross) {
-  const randomShotIndex = Math.floor(Math.random() * playerTilesArray.length)
-  if (playerTilesArray[randomShotIndex].classList.contains('hit') || playerTilesArray[randomShotIndex].classList.contains('miss')) {
-    computerShot(cross)
+  let randomIndex = null
+  if (previousHit.length >= 1) {
+    randomIndex = calculatedShot(previousHit[previousHit.length - 1], 1)
+    console.log('The shot being returned is ' + randomIndex)
   } else {
-    if (playerTilesArray[randomShotIndex].classList.contains('ship')) {
-      playerTilesArray[randomShotIndex].classList.add('hit')
-      playerTilesArray[randomShotIndex].appendChild(cross)
-      displayShots('computer', 'hit')
-      computerScore++
+    randomIndex = randomShot()
+  }
+  if (playerTilesArray[randomIndex].classList.contains('ship')) {
+    playerTilesArray[randomIndex].classList.add('hit')
+    playerTilesArray[randomIndex].appendChild(cross)
+    previousHit.push(randomIndex)
+    const playerShipSunk = hasShipBeenDestroyed('computer')
+    if (playerShipSunk[0]) {
+      removeSunkenShipIndex(playerShipSunk[1])
+      displayShots('computer', 'hit', playerShipSunk[1])
     } else {
-      playerTilesArray[randomShotIndex].classList.add('miss')
-      playerTilesArray[randomShotIndex].appendChild(cross)
-      displayShots('computer', 'miss')
+      displayShots('computer', 'hit', undefined)
     }
+    computerScore++
+  } else {
+    playerTilesArray[randomIndex].classList.add('miss')
+    playerTilesArray[randomIndex].appendChild(cross)
+    displayShots('computer', 'miss', undefined)
   }
 }
+
+// Returns a random index for the computer to shoot at
+function randomShot() {
+  const randomShotIndex = Math.floor(Math.random() * playerTilesArray.length)
+  if (playerTilesArray[randomShotIndex].classList.contains('hit') || playerTilesArray[randomShotIndex].classList.contains('miss')) {
+    return randomShot()
+  } else {
+    return randomShotIndex
+  }
+}
+
+// Calculates a more accurate shot for the computer
+function calculatedShot(lastIndexShotAt, index) {
+  console.log(previousHit)
+  for (let i = 0; i < 4; i++) {
+    const newIndex = rotation(lastIndexShotAt)
+    if (playerTilesArray[newIndex] !== undefined) {
+      if (!playerTilesArray[newIndex].classList.contains('hit') && !playerTilesArray[newIndex].classList.contains('miss')) {
+        return newIndex
+      }
+    }
+    direction++
+    if (direction === 4) {
+      direction = 0
+    }
+  }
+  console.log(index, previousHit[previousHit.length - index])
+  index++
+  return calculatedShot(previousHit[previousHit.length - index], index)
+}
+
+// Checks to see if a ship has been sunk
+function hasShipBeenDestroyed(user) {
+  if (user === 'player') {
+    user = indexWithAllComputerShipPositions
+    for (let i = 0; i < shipNames.length; i++) {
+      const hasBeenSunk = user[i].every((index) => {
+        return computerTilesArray[index].classList.contains('hit') && !computerTilesArray[index].classList.contains('sunk')
+      })
+      if (hasBeenSunk) {
+        user[i].forEach((index) => {
+          computerTilesArray[index].classList.add('sunk')
+        })
+        return [true, shipNames[i]]
+      }
+    }
+  } else {
+    user = indexWithAllPlayerShipPositions
+    for (let i = 0; i < shipNames.length; i++) {
+      const hasBeenSunk = user[i].every((index) => {
+        return playerTilesArray[index].classList.contains('hit') && !playerTilesArray[index].classList.contains('sunk')
+      })
+      if (hasBeenSunk) {
+        user[i].forEach((index) => {
+          playerTilesArray[index].classList.add('sunk')
+        })
+        return [true, shipNames[i]]
+      }
+    }
+  }
+  return [false]
+}
+// removes the index of the sunken ship from previous hit so that it does not keep looking around them
+function removeSunkenShipIndex(sunkenShipName) {
+  const shipNameIndex = shipNames.findIndex((name) => {
+    return name === sunkenShipName
+  })
+  const newPreviousHit = previousHit.filter((hitIndex) => {
+    let found = false
+    indexWithAllPlayerShipPositions[shipNameIndex].forEach((indexOfShip) => {
+      if (indexOfShip === hitIndex) {
+        found = true
+      }
+    })
+    if (!found) {
+      return hitIndex
+    }
+  })
+  previousHit = newPreviousHit
+}
+
 // Checks to see if anyone has won the game
 function checkWin() {
   if (playerScore === 17 || computerScore === 17) {
@@ -367,19 +464,27 @@ function checkWin() {
   }
 }
 // function that displays the information into the main grid about the shots
-function displayShots(user, result) {
+function displayShots(user, result, ship) {
   if (user === 'player') {
     displayPlayShot.classList.remove('hit')
     displayPlayShot.classList.remove('miss')
     displayPlayShot.innerHTML = 'X'
     displayPlayShot.classList.add(`${result}`)
-    playerHitOrMiss.innerHTML = `${result}`
+    if (ship !== undefined) {
+      playerHitOrMiss.innerHTML = `${result}, you sunk the computer's ${ship}`
+    } else {
+      playerHitOrMiss.innerHTML = `${result}`
+    }
   } else {
     displayCompShot.classList.remove('hit')
     displayCompShot.classList.remove('miss')
     displayCompShot.innerHTML = 'X'
     displayCompShot.classList.add(`${result}`)
-    computerHitOrMiss.innerHTML = `${result}`
+    if (ship !== undefined) {
+      computerHitOrMiss.innerHTML = `${result}, your ${ship} was sunk`
+    } else {
+      computerHitOrMiss.innerHTML = `${result}`
+    }
   }
 }
 
@@ -391,13 +496,18 @@ function resetGame() {
   welcome.style.display = 'flex'
   shipSizeIndex = 0
   playerShips = true
-  indexToAddShipsToo = []
+  indexToAddShipsTo = []
   tileToShoot = false
   shotFired = false
   playerScore = 0
   computerScore = 0
+  previousHit = []
+  indexWithAllPlayerShipPositions = []
+  indexWithAllComputerShipPositions = []
   displayPlayShot.innerHTML = ''
   displayCompShot.innerHTML = ''
+  playerHitOrMiss.innerHTML = ''
+  computerHitOrMiss.innerHTML = ''
   const allSpan = Array.from(document.querySelectorAll('span'))
   allSpan.forEach((xSpan) => {
     xSpan.remove()
@@ -414,6 +524,7 @@ function resetGame() {
     tile.classList.remove('battleship')
     tile.classList.remove('carrier')
     tile.classList.remove('ship')
+    tile.classList.remove('sunk')
   })
   computerTilesArray.forEach((tile) => {
     tile.classList.remove('hit')
@@ -424,5 +535,6 @@ function resetGame() {
     tile.classList.remove('battleship')
     tile.classList.remove('carrier')
     tile.classList.remove('ship')
+    tile.classList.remove('sunk')
   })
 }

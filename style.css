@@ -10,6 +10,7 @@ body {
   align-items: center;
   height: 90vh;
   width: 100%;
+  background-color: lightgrey;
 }
 h1 {
   text-transform: uppercase;
@@ -69,6 +70,7 @@ h3{
   flex-wrap: wrap;
 }
 #information {
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -121,11 +123,16 @@ strong {
 }
 #playershots {
   width: 100%;
-  height: 40%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 #displayPlayShot {
-  height: 50%;
-  width: 100%;
+  border-radius: 50%;
+  height: 40%;
+  width: 80%;
   background-color: aqua;
   display: flex;
   align-items: center;
@@ -134,15 +141,21 @@ strong {
 }
 #playerHitOrMiss {
   text-transform: uppercase;
+  font-size: 13px;
 }
 
 #computershots {
   width: 100%;
-  height: 40%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 #displayCompShot {
-  height: 50%;
-  width: 100%;
+  border-radius: 50%;
+  height: 40%;
+  width: 80%;
   background-color: aqua;
   display: flex;
   align-items: center;
@@ -151,31 +164,32 @@ strong {
 }
 #compHitOrMiss {
   text-transform: uppercase;
+  font-size: 13px;
 }
 
 .destroyer {
-  width: 30px;
-  height: 60px;
+  width: 40%;
+  height: 30%;
   background-color: green;
 }
 .submarine {
-  width: 30px;
-  height: 90px;
+  width: 40%;
+  height: 45%;
   background-color: yellow;
 }
 .cruiser {
-  width: 30px;
-  height: 90px;
+  width: 40%;
+  height: 45%;
   background-color: pink;
 }
 .battleship {
-  width: 30px;
-  height: 120px;
+  width: 40%;
+  height: 60%;
   background-color: purple;
 }
 .carrier {
-  width: 30px;
-  height: 150px;
+  width: 40%;
+  height: 75%;
   background-color: brown;
 }
 
