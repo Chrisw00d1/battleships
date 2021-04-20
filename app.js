@@ -13,8 +13,8 @@ const placementError = document.querySelector('#placementError')
 const displayDirection = document.querySelector('#direction')
 // info for battle stuff
 const battleStage = document.querySelector('#battleStage')
-const displayPlayShot = document.querySelector('#displayPlayShot')
-const displayCompShot = document.querySelector('#displayCompShot')
+const displayPlayShot = document.querySelector('#playerX')
+const displayCompShot = document.querySelector('#computerX')
 const playerHitOrMiss = document.querySelector('#playerHitOrMiss')
 const computerHitOrMiss = document.querySelector('#compHitOrMiss')
 const computerIsFiring = document.querySelector('#computerIsFiring')
@@ -120,7 +120,7 @@ startButton.addEventListener('click', () => {
   }
   if (!gameStarted) {
     gameStarted = true
-    shipShownInInfo.classList.add(shipNames[shipSizeIndex])
+    shipShownInInfo.classList.add(`${shipNames[shipSizeIndex]}Display`)
     startButton.innerHTML = 'Confirm placement'
     displayDirection.innerHTML = `Direction: ${directions[direction]}`
   }
@@ -164,6 +164,7 @@ startButton.addEventListener('click', () => {
 
 // Planning Mode to place a ship with checks
 function placeShip(divIndex) {
+  placementError.innerHTML = ''
   const incaseError = indexToAddShipsTo
   indexToAddShipsTo = []
   indexToAddShipsTo.push(divIndex)
@@ -183,6 +184,7 @@ function placeShip(divIndex) {
       indexToAddShipsTo = incaseError
     }
     indexToAddShipsTo.forEach((index) => {
+      
       playerTilesArray[index].classList.add(shipNames[shipSizeIndex])
     })
   } else {
@@ -195,9 +197,9 @@ function placeShip(divIndex) {
       indexToAddShipsTo = incaseError
     }
     // This code below shows the location of the computer ships comment it out to hide it for the actual game
-    indexToAddShipsTo.forEach((index) => {
-      computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
-    })
+    // indexToAddShipsTo.forEach((index) => {
+    //   computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
+    // })
   }
 
 }
@@ -263,9 +265,9 @@ function checkLoopsLeftOrRight() {
 }
 // function that confirms the placement of the ships
 function confirmPlacement() {
-  shipShownInInfo.classList.remove(shipNames[shipSizeIndex])
+  shipShownInInfo.classList.remove(`${shipNames[shipSizeIndex]}Display`)
   shipSizeIndex++
-  shipShownInInfo.classList.add(shipNames[shipSizeIndex])
+  shipShownInInfo.classList.add(`${shipNames[shipSizeIndex]}Display`)
   indexWithAllPlayerShipPositions.push(indexToAddShipsTo)
   indexToAddShipsTo.forEach((index) => {
     playerTilesArray[index].classList.add('ship')
@@ -451,6 +453,14 @@ function removeSunkenShipIndex(sunkenShipName) {
 // Checks to see if anyone has won the game
 function checkWin() {
   if (playerScore === 17 || computerScore === 17) {
+    if (tileToShoot) {
+      removePreviousSelected()
+    }
+    for (let i = 0; i < shipNames.length; i++) {
+      indexWithAllComputerShipPositions[i].forEach((index) => {
+        computerTilesArray[index].classList.add(`${shipNames[i]}`)
+      })
+    }
     gameWon = true
     battleMode = false
     battleStage.style.display = 'none'
@@ -504,16 +514,16 @@ function resetGame() {
   previousHit = []
   indexWithAllPlayerShipPositions = []
   indexWithAllComputerShipPositions = []
-  displayPlayShot.innerHTML = ''
-  displayCompShot.innerHTML = ''
+  displayPlayShot.classList.remove('hit')
+  displayPlayShot.classList.remove('miss')
+  displayCompShot.classList.remove('hit')
+  displayCompShot.classList.remove('miss')
   playerHitOrMiss.innerHTML = ''
   computerHitOrMiss.innerHTML = ''
   const allSpan = Array.from(document.querySelectorAll('span'))
   allSpan.forEach((xSpan) => {
     xSpan.remove()
   })
-  displayPlayShot.innerHTML = ''
-  displayCompShot.innerHTML = ''
   startButton.innerHTML = 'Start'
   playerTilesArray.forEach((tile) => {
     tile.classList.remove('hit')

@@ -10,14 +10,22 @@ body {
   align-items: center;
   height: 90vh;
   width: 100%;
-  background-color: lightgrey;
+  background-color: #151515;
 }
 h1 {
   text-transform: uppercase;
   flex: 1;
+  font-size: 50px;
+  color: whitesmoke;
+}
+h3 {
+  font-size: 30px;
+  color: whitesmoke;
 }
 p {
   text-align: center;
+  color: white;
+  margin: 0;
 }
 main {
   flex: 9;
@@ -25,7 +33,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: lightgrey;
+  background-color: #151515;
 }
 
 h3{
@@ -46,7 +54,7 @@ h3{
   height: 85%;
   margin-bottom: 10px;
   margin-left: 20px;
-  background-color: aqua;
+  background-color: rgb(6, 50, 6);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -65,7 +73,7 @@ h3{
   height: 85%;
   margin-bottom: 10px;
   margin-right: 20px;
-  background-color: aquamarine;
+  background-color: rgb(6, 50, 6);
   display: flex;
   flex-wrap: wrap;
 }
@@ -77,7 +85,7 @@ h3{
   justify-content: space-around;
   height: 100%;
   width: 15%;
-  background-color: grey;
+  background-color: rgb(68, 67, 67);
 }
 #welcome {
   height: 50%;
@@ -100,8 +108,10 @@ strong {
 }
 
 #shipDisplay {
-  background-color: aqua;
-  height: 50%;
+  border: 3px solid rgb(7, 128, 7);
+  border-radius: 15px;
+  background-color: rgb(6, 50, 6);
+  height: 40%;
   width: 50%;
   display: flex;
   justify-content: center;
@@ -110,6 +120,8 @@ strong {
 #nameToDisplay {
   text-transform: uppercase;
   font-weight: bold;
+  font-size: 25px;
+  color: whitesmoke;
 }
 #lengthToDisplay {
   font-weight: bold;
@@ -129,16 +141,25 @@ strong {
   justify-content: center;
   align-items: center;
 }
-#displayPlayShot {
+#displayPlayShot, #displayCompShot {
   border-radius: 50%;
-  height: 40%;
+  height: 60%;
   width: 80%;
-  background-color: aqua;
-  display: flex;
-  align-items: center;
+  background: radial-gradient(circle, #151515 20%, rgb(5, 63, 5) 40%, #151515 40%,
+                            rgb(5, 63, 5) 60%, #151515 60%, rgb(5, 63, 5) 80%, #151515 80%);
+  border: 2px solid rgba(7, 128, 7,0.2);
+  display: grid;
   justify-content: center;
-  font-size: 50px;
+  align-content: center;
+  font-size: 30px;
+  color: transparent;
 }
+
+.displayX, .radar {
+  grid-column: 1;
+  grid-row: 1;
+}
+
 #playerHitOrMiss {
   text-transform: uppercase;
   font-size: 13px;
@@ -152,39 +173,59 @@ strong {
   justify-content: center;
   align-items: center;
 }
-#displayCompShot {
-  border-radius: 50%;
-  height: 40%;
-  width: 80%;
-  background-color: aqua;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 50px;
-}
+
 #compHitOrMiss {
   text-transform: uppercase;
   font-size: 13px;
 }
 
 .destroyer {
-  width: 40%;
-  height: 30%;
-  background-color: green;
+  background-color: orange;
 }
-.submarine {
+.destroyerDisplay {
   width: 40%;
   height: 45%;
+  border-top-right-radius: 60%;
+  border-bottom-left-radius: 60%;
+  border-bottom-right-radius: 60%;
+  border-top-left-radius: 60%;
+  background-color: orange;
+}
+.submarine {
+  background-color: yellow;
+}
+.submarineDisplay {
+  width: 40%;
+  height: 60%;
+  border-top-right-radius: 60%;
+  border-bottom-left-radius: 60%;
+  border-bottom-right-radius: 60%;
+  border-top-left-radius: 60%;
   background-color: yellow;
 }
 .cruiser {
-  width: 40%;
-  height: 45%;
   background-color: pink;
 }
-.battleship {
+.cruiserDisplay {
   width: 40%;
   height: 60%;
+  border-top-right-radius: 60%;
+  border-bottom-left-radius: 60%;
+  border-bottom-right-radius: 60%;
+  border-top-left-radius: 60%;
+  background-color: pink;
+}
+
+.battleship {
+  background-color: purple;
+}
+.battleshipDisplay {
+  width: 40%;
+  height: 70%;
+  border-top-right-radius: 60%;
+  border-bottom-left-radius: 60%;
+  border-bottom-right-radius: 60%;
+  border-top-left-radius: 60%;
   background-color: purple;
 }
 .carrier {
@@ -192,9 +233,18 @@ strong {
   height: 75%;
   background-color: brown;
 }
+.carrierDisplay {
+  width: 40%;
+  height: 80%;
+  border-top-right-radius: 60%;
+  border-bottom-left-radius: 60%;
+  border-bottom-right-radius: 60%;
+  border-top-left-radius: 60%;
+  background-color: brown;
+}
 
 .sea{
-  border: 1px solid black;
+  border: 1px dashed rgb(7, 128, 7);
   font-size: 0;
   display: flex;
   align-items: center;
@@ -209,7 +259,7 @@ strong {
 }
 
 span {
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .miss {
@@ -217,4 +267,40 @@ span {
 }
 .hit {
   color: red;
+}
+
+@keyframes clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.radar {
+	animation-duration: 6s;
+	animation-iteration-count: infinite;
+}
+
+.radar {
+	width: 40%;
+	height: 145%;
+	animation-name: clockwise;
+	animation-timing-function: linear;
+	transform-origin: right bottom;
+	background: linear-gradient(70deg, transparent 35%, rgb(12, 241, 12)), transparent;
+  position: relative;
+  top: -100%;
+  right: -5%;
+}
+.displayX {
+  height: 100%;
+  width: 100%;
+}
+
+@media screen and (min-width: 1850px) {
+  .radar {
+    height: 225%;
+    top: -180%;
+  }
+  #displayPlayShot, #displayCompShot {
+    height: 50%
+  }
+
 }

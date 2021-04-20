@@ -11,7 +11,7 @@
   <h1>BattleShips</h1>
   <main>
     <section id="player">
-      <h3>Player's board</h3>
+      <h3>Your board</h3>
       <div id="player-board"></div>
     </section>
     <section id="information">
@@ -37,12 +37,20 @@
       <div id="battleStage">
         <div id="playershots">
           <p>Your Shot</p>
-          <div id="displayPlayShot"></div>
+          <div id="displayPlayShot">
+            <!-- ADD DIV HERE -->
+            <div class="displayX" id="playerX">X</div>
+            <div class="radar"></div>
+          </div>
           <p id="playerHitOrMiss"></p>
         </div>
         <div id="computershots">
           <p>Computer's shot</p>
-          <div id="displayCompShot"></div>
+          <div id="displayCompShot">
+            <!-- ADD DIV HERE -->
+            <div class="displayX" id="computerX">X</div>
+            <div class="radar"></div>
+          </div>
           <p id="compHitOrMiss"></p>
         </div>
         <p id="computerIsFiring"></p>
