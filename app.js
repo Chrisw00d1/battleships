@@ -2,6 +2,14 @@
 const playerTiles = document.querySelector('#player-board')
 const computerTiles = document.querySelector('#computer-board')
 const startButton = document.querySelector('#start')
+// sound
+const keyboardSound = document.querySelector('#keyboard')
+const backgroundMusic = document.querySelector('#background')
+const hitSound = document.querySelector('#hitSound')
+const missSound = document.querySelector('#missSound')
+const soundButton = document.querySelector('#soundButton')
+const musicButton = document.querySelector('#musicButton')
+// 
 // displays in the information
 const welcome = document.querySelector('#welcome')
 // info for ship placement
@@ -22,7 +30,6 @@ const computerRadar = document.querySelector('#computerRadar')
 // winning screen
 const winningScreen = document.querySelector('#winningScreen')
 const whoWon = document.querySelector('#whoWon')
-
 
 const width = 10
 const playerTilesArray = []
@@ -79,7 +86,7 @@ function createGrid(grid) {
             removePreviousSelected()
           }
           if (tile.classList.contains('hit') || tile.classList.contains('miss')) {
-            console.log('You have already fired here')
+            // deleted code that was no longer used here
           } else {
             selectTile(Number(tile.innerHTML))
             tileToShoot = true
@@ -112,8 +119,14 @@ startButton.addEventListener('click', () => {
       placeComputerShips()
       planningMode = false
       battleMode = true
+      backgroundMusic.src = './Sounds/battle.wav'
+      if (musicPlaying) {
+        backgroundMusic.play()
+      }
       startButton.innerHTML = 'Confirm Shot'
       battleStage.style.display = 'flex'
+      keyboardSound.currentTime = Math.ceil(Math.random() * 12)
+      keyboardSound.play()
       animateText(('Your Radar').split(''), playerRadar, 0)
       animateText(('Computer\'s Radar').split(''), computerRadar, 0)
       playerHitOrMiss.innerHTML = ''
@@ -128,12 +141,14 @@ startButton.addEventListener('click', () => {
     gameStarted = true
     shipShownInInfo.classList.add(`${shipNames[shipSizeIndex]}Display`)
     startButton.innerHTML = 'Confirm placement'
-    displayDirection.innerHTML = `Direction: ${directions[direction]}`
+    displayDirection.innerHTML = `Direction: <em>${directions[direction]}</em>`
   }
   // Displaying the information of the ships in the middle block
   if (!battleMode && !gameWon) {
     if (!nameDisplayed) {
       nameDisplayed = true
+      keyboardSound.currentTime = Math.ceil(Math.random() * 12)
+      keyboardSound.play()
       animateText((`${shipNames[shipSizeIndex]}`).split(''), nameToDisplay, 0)
       animateText((`LENGTH: ${shipSizes[shipSizeIndex]}`).split(''), lengthToDisplay, 0)
     }
@@ -151,11 +166,16 @@ startButton.addEventListener('click', () => {
       makeShot('player')
       if (!gameWon) {
         // ADD COMPUTER IS WAITING HERE
-        animateText(('The Computer is firing...').split(''), computerHitOrMiss, 0)
         setTimeout(() => {
-          makeShot('computer')
-          shotFired = false
-        }, 3000)
+          keyboardSound.currentTime = Math.ceil(Math.random() * 12)
+          keyboardSound.play()
+          animateText(('The Computer is firing...').split(''), computerHitOrMiss, 0)
+          setTimeout(() => {
+            makeShot('computer')
+            shotFired = false
+          }, 3000)
+        }, 700)
+
       }
     }
   }
@@ -216,7 +236,7 @@ document.addEventListener('keydown', (event) => {
       removePreviousPlacement()
       placeShip(indexToAddShipsTo[0])
     }
-    displayDirection.innerHTML = `Direction: ${directions[direction]}`
+    displayDirection.innerHTML = `Direction: <em>${directions[direction]}</em>`
   }
 })
 
@@ -246,21 +266,28 @@ function removePreviousPlacement() {
 }
 
 // checks to see if the ship wraps around the grid
-function checkLoopsLeftOrRight() {
-  let comparing = indexToAddShipsTo[0]
+function checkLoopsLeftOrRight(newIndex, lastIndexShotAt) {
   let wrapfound = false
-  for (let i = 1; i < indexToAddShipsTo.length; i++) {
-    if (comparing % 10 === 0) {
-      if (indexToAddShipsTo[i] === comparing - 1) {
-        wrapfound = true
+  if (!battleMode) {
+    let comparing = indexToAddShipsTo[0]
+    for (let i = 1; i < indexToAddShipsTo.length; i++) {
+      if (comparing % 10 === 0) {
+        if (indexToAddShipsTo[i] === comparing - 1) {
+          wrapfound = true
+        }
+      } else if (indexToAddShipsTo[i] % 10 === 0) {
+        if (indexToAddShipsTo[i] === comparing + 1) {
+          wrapfound = true
+        }
       }
-    } else if (indexToAddShipsTo[i] % 10 === 0) {
-      if (indexToAddShipsTo[i] === comparing + 1) {
-        wrapfound = true
-      }
+      comparing = indexToAddShipsTo[i]
     }
-    comparing = indexToAddShipsTo[i]
+  } else {
+    if ((lastIndexShotAt % 10 === 0 && newIndex === lastIndexShotAt - 1) || (newIndex % 10 === 0 && lastIndexShotAt === newIndex - 1)) {
+      wrapfound = true
+    }
   }
+
   return wrapfound
 }
 // function that confirms the placement of the ships
@@ -300,11 +327,14 @@ function animateText(array, whereToAdd, index) {
     whereToAdd.innerHTML = ''
   }
   if (index < array.length) {
-    console.log('yes')
     whereToAdd.innerHTML += array[index]
     index++
     setTimeout(() => {
       animateText(array, whereToAdd, index)
+    }, 100)
+  } else {
+    setTimeout(() => {
+      keyboardSound.pause()
     }, 100)
   }
 }
@@ -364,7 +394,6 @@ function computerShot(cross) {
   let randomIndex = null
   if (previousHit.length >= 1) {
     randomIndex = calculatedShot(previousHit[previousHit.length - 1], 1)
-    console.log('The shot being returned is ' + randomIndex)
   } else {
     randomIndex = randomShot()
   }
@@ -399,10 +428,9 @@ function randomShot() {
 
 // Calculates a more accurate shot for the computer
 function calculatedShot(lastIndexShotAt, index) {
-  console.log(previousHit)
   for (let i = 0; i < 4; i++) {
     const newIndex = rotation(lastIndexShotAt)
-    if (playerTilesArray[newIndex] !== undefined) {
+    if (playerTilesArray[newIndex] !== undefined && !checkLoopsLeftOrRight(newIndex, lastIndexShotAt)) {
       if (!playerTilesArray[newIndex].classList.contains('hit') && !playerTilesArray[newIndex].classList.contains('miss')) {
         return newIndex
       }
@@ -412,7 +440,6 @@ function calculatedShot(lastIndexShotAt, index) {
       direction = 0
     }
   }
-  console.log(index, previousHit[previousHit.length - index])
   index++
   return calculatedShot(previousHit[previousHit.length - index], index)
 }
@@ -497,8 +524,11 @@ function displayShots(user, result, ship) {
     displayPlayShot.classList.remove('miss')
     displayPlayShot.innerHTML = 'X'
     displayPlayShot.classList.add(`${result}`)
+    keyboardSound.currentTime = Math.ceil(Math.random() * 12)
+    keyboardSound.play()
     if (ship !== undefined) {
       animateText((`${result}, you sunk the ${ship}`).split(''), playerHitOrMiss, 0)
+
     } else {
       animateText((`${result}`).split(''), playerHitOrMiss, 0)
     }
@@ -507,11 +537,18 @@ function displayShots(user, result, ship) {
     displayCompShot.classList.remove('miss')
     displayCompShot.innerHTML = 'X'
     displayCompShot.classList.add(`${result}`)
+    keyboardSound.currentTime = Math.ceil(Math.random() * 12)
+    keyboardSound.play()
     if (ship !== undefined) {
       animateText((`${result}, your ${ship} was sunk`).split(''), computerHitOrMiss, 0)
     } else {
       animateText((`${result}`).split(''), computerHitOrMiss, 0)
     }
+  }
+  if (result === 'miss') {
+    missSound.play()
+  } else {
+    hitSound.play()
   }
 }
 
@@ -529,6 +566,10 @@ function resetGame() {
   playerScore = 0
   computerScore = 0
   previousHit = []
+  backgroundMusic.src = './Sounds/planning.wav'
+  if (musicPlaying) {
+    backgroundMusic.play()
+  }
   indexWithAllPlayerShipPositions = []
   indexWithAllComputerShipPositions = []
   displayPlayShot.classList.remove('hit')
@@ -563,3 +604,43 @@ function resetGame() {
     tile.classList.remove('sunk')
   })
 }
+
+
+// Background Music
+// backgroundMusic.muted = true
+let musicPlaying = false
+let soundStopped = true
+keyboardSound.muted = soundStopped
+hitSound.muted = soundStopped
+missSound.muted = soundStopped
+backgroundMusic.loop = true
+backgroundMusic.volume = 0.03
+keyboardSound.volume = 0.3
+
+musicButton.addEventListener('click', () => {
+  if (!musicPlaying) {
+    musicPlaying = true
+    backgroundMusic.play()
+    musicButton.innerHTML = 'Music: ON'
+  } else {
+    musicPlaying = false
+    backgroundMusic.pause()
+    musicButton.innerHTML = 'Music: OFF'
+  }
+})
+
+soundButton.addEventListener('click', () => {
+  if (soundStopped) {
+    soundStopped = false
+    keyboardSound.muted = soundStopped
+    hitSound.muted = soundStopped
+    missSound.muted = soundStopped
+    soundButton.innerHTML = 'Sound: ON'
+  } else {
+    soundStopped = true
+    keyboardSound.muted = soundStopped
+    hitSound.muted = soundStopped
+    missSound.muted = soundStopped
+    soundButton.innerHTML = 'Sound: OFF'
+  }
+})

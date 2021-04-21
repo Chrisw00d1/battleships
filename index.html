@@ -3,11 +3,20 @@
 
 <head>
   <title>BattleShips</title>
+  <link rel="shortcut icon" href="#">
   <link rel="stylesheet" href="style.css">
   <script defer src="app.js"></script>
+  <audio src="./Sounds/keyboard.wav" id="keyboard"></audio>
+  <audio src="./Sounds/planning.wav" id="background"></audio>
+  <audio src="./Sounds/hit.wav" id="hitSound"></audio>
+  <audio src="./Sounds/miss.wav" id="missSound"></audio>
 </head>
 
 <body>
+  <ul>
+    <li><button id="musicButton">Music: OFF</button></li>
+    <li><button id="soundButton">Sound: OFF</button></li>
+  </ul>
   <h1>BattleShips</h1>
   <main>
     <section id="player">
@@ -17,8 +26,8 @@
     <section id="information">
       <!-- Welcome screen -->
       <div id="welcome">
-        <p><strong>Welcome to Battleships!</strong><br><br>
-          Press start to begin your game against the computer</p>
+        <p><strong>Welcome to Battleships!</strong></p>
+        <p>Press start play against the computer</p>
       </div>
       <!-- Information on placing the ships -->
       <div id="shipPlacement">
@@ -28,9 +37,8 @@
           <p id="lengthToDisplay"></p>
         </div>
         <p id="placementError"></p>
-        <p>Click to place ship<br>
-          Press 'r' to rotate</p>
         <p id="direction"></p>
+        <p>Click: Place ship<br>R: Rotate ship</p>
       </div>
       <!-- Information when firing shots -->
       <div id="battleStage">
