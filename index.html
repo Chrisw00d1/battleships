@@ -11,7 +11,7 @@
   <h1>BattleShips</h1>
   <main>
     <section id="player">
-      <h3>Your board</h3>
+      <h3>Your Grid</h3>
       <div id="player-board"></div>
     </section>
     <section id="information">
@@ -22,12 +22,11 @@
       </div>
       <!-- Information on placing the ships -->
       <div id="shipPlacement">
-        <p id="nameToDisplay"></p>
         <div id="shipDisplay">
-          <div class="shipShown">
-          </div>
+          <p id="nameToDisplay"></p>
+          <div class="shipShown"></div>
+          <p id="lengthToDisplay"></p>
         </div>
-        <p id="lengthToDisplay"></p>
         <p id="placementError"></p>
         <p>Click to place ship<br>
           Press 'r' to rotate</p>
@@ -36,7 +35,7 @@
       <!-- Information when firing shots -->
       <div id="battleStage">
         <div id="playershots">
-          <p>Your Shot</p>
+          <p class="whosRadar" id="playerRadar"></p>
           <div id="displayPlayShot">
             <!-- ADD DIV HERE -->
             <div class="displayX" id="playerX">X</div>
@@ -45,7 +44,7 @@
           <p id="playerHitOrMiss"></p>
         </div>
         <div id="computershots">
-          <p>Computer's shot</p>
+          <p class="whosRadar" id="computerRadar"></p>
           <div id="displayCompShot">
             <!-- ADD DIV HERE -->
             <div class="displayX" id="computerX">X</div>
@@ -53,7 +52,6 @@
           </div>
           <p id="compHitOrMiss"></p>
         </div>
-        <p id="computerIsFiring"></p>
       </div>
       <!-- Winning screen -->
       <div id="winningScreen">
@@ -63,7 +61,7 @@
       <button id="start">Start</button>
     </section>
     <section id="computer">
-      <h3>Computer's board</h3>
+      <h3>Computer's Grid</h3>
       <div id="computer-board"></div>
     </section>
   </main>

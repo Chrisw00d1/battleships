@@ -17,7 +17,8 @@ const displayPlayShot = document.querySelector('#playerX')
 const displayCompShot = document.querySelector('#computerX')
 const playerHitOrMiss = document.querySelector('#playerHitOrMiss')
 const computerHitOrMiss = document.querySelector('#compHitOrMiss')
-const computerIsFiring = document.querySelector('#computerIsFiring')
+const playerRadar = document.querySelector('#playerRadar')
+const computerRadar = document.querySelector('#computerRadar')
 // winning screen
 const winningScreen = document.querySelector('#winningScreen')
 const whoWon = document.querySelector('#whoWon')
@@ -45,6 +46,7 @@ let indexWithAllPlayerShipPositions = []
 let indexWithAllComputerShipPositions = []
 let playerShips = true
 const directions = ['Down', 'Left', 'Up', 'Right']
+let nameDisplayed = false
 
 // Creates a grid
 function createGrid(grid) {
@@ -101,7 +103,7 @@ startButton.addEventListener('click', () => {
     confirmPlacement()
     indexToAddShipsTo = []
     if (shipSizeIndex === shipSizes.length - 1) {
-      startButton.innerHTML = 'Confirm placement and start battle'
+      startButton.innerHTML = 'Start Battle!'
     }
     // When the player has placed all their ships
     if (shipSizeIndex === shipSizes.length) {
@@ -112,6 +114,10 @@ startButton.addEventListener('click', () => {
       battleMode = true
       startButton.innerHTML = 'Confirm Shot'
       battleStage.style.display = 'flex'
+      animateText(('Your Radar').split(''), playerRadar, 0)
+      animateText(('Computer\'s Radar').split(''), computerRadar, 0)
+      playerHitOrMiss.innerHTML = ''
+      computerHitOrMiss.innerHTML = ''
     }
     placementError.innerHTML = ''
     // The player hasn't placed a ship yet
@@ -126,8 +132,11 @@ startButton.addEventListener('click', () => {
   }
   // Displaying the information of the ships in the middle block
   if (!battleMode && !gameWon) {
-    nameToDisplay.innerHTML = `${shipNames[shipSizeIndex]}`
-    lengthToDisplay.innerHTML = `LENGTH: ${shipSizes[shipSizeIndex]}`
+    if (!nameDisplayed) {
+      nameDisplayed = true
+      animateText((`${shipNames[shipSizeIndex]}`).split(''), nameToDisplay, 0)
+      animateText((`LENGTH: ${shipSizes[shipSizeIndex]}`).split(''), lengthToDisplay, 0)
+    }
     planningMode = true
     shipPlacement.style.display = 'flex'
   }
@@ -142,20 +151,11 @@ startButton.addEventListener('click', () => {
       makeShot('player')
       if (!gameWon) {
         // ADD COMPUTER IS WAITING HERE
-        let intervalCounter = 0
-        computerIsFiring.innerHTML = 'The Computer is firing'
-        const intervalId = setInterval(() => {
-          if (intervalCounter < 3) {
-            computerIsFiring.innerHTML += '.'
-          }
-          if (intervalCounter === 3) {
-            clearInterval(intervalId)
-            makeShot('computer')
-            computerIsFiring.innerHTML = ''
-            shotFired = false
-          }
-          intervalCounter++
-        }, 400)
+        animateText(('The Computer is firing...').split(''), computerHitOrMiss, 0)
+        setTimeout(() => {
+          makeShot('computer')
+          shotFired = false
+        }, 3000)
       }
     }
   }
@@ -184,7 +184,7 @@ function placeShip(divIndex) {
       indexToAddShipsTo = incaseError
     }
     indexToAddShipsTo.forEach((index) => {
-      
+
       playerTilesArray[index].classList.add(shipNames[shipSizeIndex])
     })
   } else {
@@ -267,6 +267,7 @@ function checkLoopsLeftOrRight() {
 function confirmPlacement() {
   shipShownInInfo.classList.remove(`${shipNames[shipSizeIndex]}Display`)
   shipSizeIndex++
+  nameDisplayed = false
   shipShownInInfo.classList.add(`${shipNames[shipSizeIndex]}Display`)
   indexWithAllPlayerShipPositions.push(indexToAddShipsTo)
   indexToAddShipsTo.forEach((index) => {
@@ -293,7 +294,23 @@ function placeComputerShips() {
   }
 }
 
+// Adds text one at a time
+function animateText(array, whereToAdd, index) {
+  if (index === 0) {
+    whereToAdd.innerHTML = ''
+  }
+  if (index < array.length) {
+    console.log('yes')
+    whereToAdd.innerHTML += array[index]
+    index++
+    setTimeout(() => {
+      animateText(array, whereToAdd, index)
+    }, 100)
+  }
+}
 
+// 
+// 
 // Battle mode
 let battleMode = false
 let tileToShoot = false
@@ -481,9 +498,9 @@ function displayShots(user, result, ship) {
     displayPlayShot.innerHTML = 'X'
     displayPlayShot.classList.add(`${result}`)
     if (ship !== undefined) {
-      playerHitOrMiss.innerHTML = `${result}, you sunk the computer's ${ship}`
+      animateText((`${result}, you sunk the ${ship}`).split(''), playerHitOrMiss, 0)
     } else {
-      playerHitOrMiss.innerHTML = `${result}`
+      animateText((`${result}`).split(''), playerHitOrMiss, 0)
     }
   } else {
     displayCompShot.classList.remove('hit')
@@ -491,9 +508,9 @@ function displayShots(user, result, ship) {
     displayCompShot.innerHTML = 'X'
     displayCompShot.classList.add(`${result}`)
     if (ship !== undefined) {
-      computerHitOrMiss.innerHTML = `${result}, your ${ship} was sunk`
+      animateText((`${result}, your ${ship} was sunk`).split(''), computerHitOrMiss, 0)
     } else {
-      computerHitOrMiss.innerHTML = `${result}`
+      animateText((`${result}`).split(''), computerHitOrMiss, 0)
     }
   }
 }
@@ -518,8 +535,6 @@ function resetGame() {
   displayPlayShot.classList.remove('miss')
   displayCompShot.classList.remove('hit')
   displayCompShot.classList.remove('miss')
-  playerHitOrMiss.innerHTML = ''
-  computerHitOrMiss.innerHTML = ''
   const allSpan = Array.from(document.querySelectorAll('span'))
   allSpan.forEach((xSpan) => {
     xSpan.remove()
