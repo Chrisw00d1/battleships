@@ -481,7 +481,7 @@ ul {
   #notOnPC {
     display: block;
   }
- #musicButton, #soundButton, #howToPlay {
-   display: none;
- } 
+  #musicButton, #soundButton, #howToPlay {
+    display: none;
+  } 
 }
