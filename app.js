@@ -630,6 +630,8 @@ hitSound.muted = soundStopped
 missSound.muted = soundStopped
 backgroundMusic.loop = true
 backgroundMusic.volume = 0.03
+hitSound.volume = 0.2
+missSound.volume = 0.2
 keyboardSound.volume = 0.3
 
 musicButton.addEventListener('click', () => {
