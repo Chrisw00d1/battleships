@@ -13,10 +13,6 @@
 </head>
 
 <body>
-  <ul>
-    <li><button id="musicButton">Music: OFF</button></li>
-    <li><button id="soundButton">Sound: OFF</button></li>
-  </ul>
   <h1>BattleShips</h1>
   <main>
     <section id="player">
@@ -73,7 +69,34 @@
       <div id="computer-board"></div>
     </section>
   </main>
-
+  <ul id="buttons">
+    <li><button id="musicButton">Music: OFF</button></li>
+    <li><button id="soundButton">Sound: OFF</button></li>
+  </ul>
+  <button id="howToPlay">How to play</button>
+  <section id="howToDisplay">
+    <h2>How to Play</h2>
+    <h4>Planning Mode</h4>
+    <ul>
+      <li>Place the ships on your grid by clicking on a tile. You can then rotate the ship by pushing "r".</li>
+      <li>Once you are happy with where you placed the ship confrim the placement.</li>
+    </ul>
+    <h4>Battle Mode</h4>
+    <ul>
+      <li>In battle mode you need to work out where the computer has hidden the ships 
+        and destroy them before your ships get sunk.</li>
+      <li>Select a tile on the computer's grid to choose where to shoot at then confrim your shot.</li>
+      <li>Your radar will tell you if it was a hit or a miss. If you sink a ship it will also be displayed what ship was sunk</li>
+      <li>The computer's radar will tell you the same information about the shots against you.</li>
+    </ul>
+    <ul id="ships">
+      <li>Destroyer: length 2</li>
+      <li>Submarine: length 3</li>
+      <li>Cruiser: length 3</li>
+      <li>Battleship: length 4</li>
+      <li>Carrier: length 5</li>
+    </ul>
+    <button id="close">Close</button>
+  </section>
 </body>
-
 </html>

@@ -12,6 +12,9 @@ const musicButton = document.querySelector('#musicButton')
 // 
 // displays in the information
 const welcome = document.querySelector('#welcome')
+const howToPlay = document.querySelector('#howToPlay')
+const closeDisplay = document.querySelector('#close')
+const howToDisplay = document.querySelector('#howToDisplay')
 // info for ship placement
 const shipPlacement = document.querySelector('#shipPlacement')
 const shipShownInInfo = document.querySelector('.shipShown')
@@ -217,9 +220,9 @@ function placeShip(divIndex) {
       indexToAddShipsTo = incaseError
     }
     // This code below shows the location of the computer ships comment it out to hide it for the actual game
-    // indexToAddShipsTo.forEach((index) => {
-    //   computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
-    // })
+    indexToAddShipsTo.forEach((index) => {
+      computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
+    })
   }
 
 }
@@ -419,7 +422,18 @@ function computerShot(cross) {
 // Returns a random index for the computer to shoot at
 function randomShot() {
   const randomShotIndex = Math.floor(Math.random() * playerTilesArray.length)
-  if (playerTilesArray[randomShotIndex].classList.contains('hit') || playerTilesArray[randomShotIndex].classList.contains('miss')) {
+  let improvedRandomShot = false
+  // Reduces the number of squares the computer has to hit from 100 to 50 by aiming at every other square
+  if ((0 <= randomShotIndex && randomShotIndex <= 9) || (20 <= randomShotIndex && randomShotIndex  <= 29) || (40 <= randomShotIndex && randomShotIndex  <= 49) || (60 <= randomShotIndex && randomShotIndex  <= 69) || (80 <= randomShotIndex && randomShotIndex  <= 89)) {
+    if (randomShotIndex % 2 !== 0) {
+      improvedRandomShot = true
+    }
+  } else {
+    if (randomShotIndex % 2 === 0) {
+      improvedRandomShot = true
+    }
+  }
+  if (playerTilesArray[randomShotIndex].classList.contains('hit') || playerTilesArray[randomShotIndex].classList.contains('miss') || !improvedRandomShot) {
     return randomShot()
   } else {
     return randomShotIndex
@@ -500,6 +514,7 @@ function checkWin() {
     if (tileToShoot) {
       removePreviousSelected()
     }
+    keyboardSound.pause()
     for (let i = 0; i < shipNames.length; i++) {
       indexWithAllComputerShipPositions[i].forEach((index) => {
         computerTilesArray[index].classList.add(`${shipNames[i]}`)
@@ -511,9 +526,9 @@ function checkWin() {
     winningScreen.style.display = 'block'
     startButton.innerHTML = 'Play again'
     if (playerScore === 17) {
-      whoWon.innerHTML = 'You Win!'
+      whoWon.innerHTML = 'Congratulations!<br><br><p id="wonText">You Win! You were able to sink all the computer\'s ships</p>'
     } else {
-      whoWon.innerHTML = 'You Lose!'
+      whoWon.innerHTML = 'You Lose<br><br><p id="wonText">All your ships were sunk. Better luck next time!</p>'
     }
   }
 }
@@ -643,4 +658,19 @@ soundButton.addEventListener('click', () => {
     missSound.muted = soundStopped
     soundButton.innerHTML = 'Sound: OFF'
   }
+})
+
+// How to play
+howToPlay.addEventListener('click', () => {
+  howToDisplay.style.display = 'flex'
+  setTimeout(() => {
+    howToDisplay.style.opacity = 1
+  }, 100)
+})
+
+closeDisplay.addEventListener('click', () => {
+  howToDisplay.style.opacity = 0
+  setTimeout(() => {
+    howToDisplay.style.display = 'none'
+  }, 2000)
 })
