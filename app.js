@@ -172,11 +172,11 @@ startButton.addEventListener('click', () => {
         setTimeout(() => {
           keyboardSound.currentTime = Math.ceil(Math.random() * 12)
           keyboardSound.play()
-          animateText(('The Computer is firing...').split(''), computerHitOrMiss, 0)
+          animateText(('The Computer is firing..').split(''), computerHitOrMiss, 0)
           setTimeout(() => {
             makeShot('computer')
             shotFired = false
-          }, 3000)
+          }, 2500)
         }, 700)
 
       }
@@ -220,9 +220,9 @@ function placeShip(divIndex) {
       indexToAddShipsTo = incaseError
     }
     // This code below shows the location of the computer ships comment it out to hide it for the actual game
-    indexToAddShipsTo.forEach((index) => {
-      computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
-    })
+    // indexToAddShipsTo.forEach((index) => {
+    //   computerTilesArray[index].classList.add(shipNames[shipSizeIndex])
+    // })
   }
 
 }
@@ -334,7 +334,7 @@ function animateText(array, whereToAdd, index) {
     index++
     setTimeout(() => {
       animateText(array, whereToAdd, index)
-    }, 100)
+    }, 70)
   } else {
     setTimeout(() => {
       keyboardSound.pause()
