@@ -319,9 +319,11 @@ function placeComputerShips() {
   }
   if (shipSizeIndex < shipNames.length) {
     placeComputerShips()
-  } else {
-    console.log(indexWithAllComputerShipPositions, 'comp positons')
-  }
+  } 
+  // Console logs the computers position
+  // else {
+  //   console.log(indexWithAllComputerShipPositions, 'comp positons')
+  // }
 }
 
 // Adds text one at a time
