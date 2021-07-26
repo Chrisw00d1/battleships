@@ -1,6 +1,8 @@
 ### ![GA](https://cloud.githubusercontent.com/assets/40461/8183776/469f976e-1432-11e5-8199-6ac91363302b.png) General Assembly, Software Engineering Immersive
 # Battleships
 
+![multipleShipsBeingHit](/images/readmeImages/battleshipsGif.gif)
+
 ## Overview
 The first project given to us by General Assembly. The task is to choose from a selection of grid base games and produce one in a week.
 
@@ -46,31 +48,169 @@ I designed the grid based on the original game where the grid is a 10 by 10.  I 
 
 I split the game into two sections of planning mode and battle mode. This way I could split the code into two sections as well so if I got any errors in one part of the game I could already limit it to a section of my code to look at. I found this to be one of the harder parts to code as bugs continued to show depending on what the user did. First, I implemented it so that the ship would always point down on the grid depending on where the user click. Before it gets displayed on the ship it is put into a function where the indexes of where the ship will be are calculated and put into an array. Each index is checked to see if there is a ship already in the index or if it goes off the grid. Each time the user clicks a new div the previous display of the ship is removed. Incase the user clicks an error the function return the previous location instead of having a blank screen again.  Once the ship has been confirmed in the chosen position, the next ship is displayed and the process repeats until the last ship. When a ship has been placed into a div then a class called ‘ship’ gets added to it.
 
-![placeship](/images/readmeImages/screenshot2.png)
+```js
+// Planning Mode to place a ship with checks
+function placeShip(divIndex) {
+  placementError.innerHTML = ''
+  const incaseError = indexToAddShipsTo
+  indexToAddShipsTo = []
+  indexToAddShipsTo.push(divIndex)
+  for (let i = 0; i < shipSizes[shipSizeIndex] - 1; i++) {
+    divIndex = rotation(divIndex)
+    indexToAddShipsTo.push(divIndex)
+  }
+  if (playerShips) {
+    const invalidPlacement = indexToAddShipsTo.some((index) => {
+      return playerTilesArray[index] === undefined || playerTilesArray[index].classList.contains('ship')
+    })
+    if (invalidPlacement) {
+      placementError.innerHTML = 'Cannot be placed here'
+      indexToAddShipsTo = incaseError
+    } else if (checkLoopsLeftOrRight()) {
+      placementError.innerHTML = 'Cannot be placed here'
+      indexToAddShipsTo = incaseError
+    }
+    indexToAddShipsTo.forEach((index) => {
+
+      playerTilesArray[index].classList.add(shipNames[shipSizeIndex])
+    })
+```
 
 Once I had it working with with the ships pointing down I added the feature to rotate the ship around the point by pressing r. Since the grid is an array that is wrapped, the ship could be split when going though the left or right side. So another function was created to check if it was going to loop to the other side of the board.
 
-![checklooping](/images/readmeImages/screenshot3.png)
+```js
+// checks to see if the ship wraps around the grid
+function checkLoopsLeftOrRight(newIndex, lastIndexShotAt) {
+  let wrapfound = false
+  if (!battleMode) {
+    let comparing = indexToAddShipsTo[0]
+    for (let i = 1; i < indexToAddShipsTo.length; i++) {
+      if (comparing % 10 === 0) {
+        if (indexToAddShipsTo[i] === comparing - 1) {
+          wrapfound = true
+        }
+      } else if (indexToAddShipsTo[i] % 10 === 0) {
+        if (indexToAddShipsTo[i] === comparing + 1) {
+          wrapfound = true
+        }
+      }
+      comparing = indexToAddShipsTo[i]
+    }
+```
 
 ### Randomly placing the computers ships
 
 This was a lot easier to implement as two random numbers are generated. One to pick the rotation and one to pick the index in the array to put the ship into. With these two values I am able to use the same function that was used for the player to check if the ships can be placed there. If it can’t be placed then two new numbers are generated. After each ship is placed then all the index are added to an array. This array contains the location of all the ships and is used for determining if a ship has been destroyed.
 
-![computerShipPlacement](/images/readmeImages/screenshot12.png)
+```js
+function placeComputerShips() {
+  indexToAddShipsTo = []
+  direction = Math.floor(Math.random() * 4)
+  const randomIndex = Math.floor(Math.random() * computerTilesArray.length)
+  placeShip(randomIndex)
+  if (indexToAddShipsTo.length >= 2) {
+    indexToAddShipsTo.forEach((index) => {
+      computerTilesArray[index].classList.add('ship')
+    })
+    indexWithAllComputerShipPositions.push(indexToAddShipsTo)
+    shipSizeIndex++
+  }
+  if (shipSizeIndex < shipNames.length) {
+    placeComputerShips()
+  } 
+```
 
 ### Getting the user to shoot
 
 Now all the ships have been placed the game is now in “battle mode”. This means the computer’s divs can be selected where a check is made to see if the player has shot at that selected div already and then to confirm the shot. If the div contains the class ‘ship’ then the grid displays a hit or a miss if there is no ship. After a ship has been hit then another check is made to see if the ship has been destroyed. This loops through all the indexes the ship is in and if all of them are hit then a message can be displayed to show which ship has been sunk.
 
-![playershooting](/images/readmeImages/screenshot4.png)
+```js
+// Checks to see if a ship has been sunk
+function hasShipBeenDestroyed(user) {
+  if (user === 'player') {
+    user = indexWithAllComputerShipPositions
+    for (let i = 0; i < shipNames.length; i++) {
+      const hasBeenSunk = user[i].every((index) => {
+        return computerTilesArray[index].classList.contains('hit') && !computerTilesArray[index].classList.contains('sunk')
+      })
+      if (hasBeenSunk) {
+        user[i].forEach((index) => {
+          computerTilesArray[index].classList.add('sunk')
+        })
+        return [true, shipNames[i]]
+      }
+    }
+  } else {
+    user = indexWithAllPlayerShipPositions
+    for (let i = 0; i < shipNames.length; i++) {
+      const hasBeenSunk = user[i].every((index) => {
+        return playerTilesArray[index].classList.contains('hit') && !playerTilesArray[index].classList.contains('sunk')
+      })
+      if (hasBeenSunk) {
+        user[i].forEach((index) => {
+          playerTilesArray[index].classList.add('sunk')
+        })
+        return [true, shipNames[i]]
+      }
+    }
+  }
+  return [false]
+}
+```
 
 ### Calculating the computer’s shot
 
 Since the smallest  ship has a size of two it means the grid can be viewed like a chess board instead. So every other div needs to be shot at instead of all of them and you are still guaranteed to hit all of the ships. This reduces the number of random shots from 100 to 50.
 
-![computershot](/images/readmeImages/screenshot5.png)
+```js
+// Selects the index where the computer will shoot where 
+// cross is just the span that gets added to tile picked by the computer
+function computerShot(cross) {
+  let randomIndex = null
+  if (previousHit.length >= 1) {
+    randomIndex = calculatedShot(previousHit[previousHit.length - 1], 1)
+  } else {
+    randomIndex = randomShot()
+  }
+  if (playerTilesArray[randomIndex].classList.contains('ship')) {
+    playerTilesArray[randomIndex].classList.add('hit')
+    playerTilesArray[randomIndex].appendChild(cross)
+    previousHit.push(randomIndex)
+    const playerShipSunk = hasShipBeenDestroyed('computer')
+    if (playerShipSunk[0]) {
+      removeSunkenShipIndex(playerShipSunk[1])
+      displayShots('computer', 'hit', playerShipSunk[1])
+    } else {
+      displayShots('computer', 'hit', undefined)
+    }
+    computerScore++
+  } else {
+    playerTilesArray[randomIndex].classList.add('miss')
+    playerTilesArray[randomIndex].appendChild(cross)
+    displayShots('computer', 'miss', undefined)
+  }
+}
+```
 
-![moreCalculatedShot](/images/readmeImages/screenshot6.png)
+```js
+// Calculates a more accurate shot for the computer
+function calculatedShot(lastIndexShotAt, index) {
+  for (let i = 0; i < 4; i++) {
+    const newIndex = rotation(lastIndexShotAt)
+    if (playerTilesArray[newIndex] !== undefined && !checkLoopsLeftOrRight(newIndex, lastIndexShotAt)) {
+      if (!playerTilesArray[newIndex].classList.contains('hit') && !playerTilesArray[newIndex].classList.contains('miss')) {
+        return newIndex
+      }
+    }
+    direction++
+    if (direction === 4) {
+      direction = 0
+    }
+  }
+  index++
+  return calculatedShot(previousHit[previousHit.length - index], index)
+}
+```
 
 If one of the random shots hit a ship then the index of that ship is added to an array which contains all the hit locations. Then the computer will look to make a shot from the most recent shot landed. If it cannot make a new shot it will go back to the previous hit location and see if there are any more shots it can make from that location. The challenge was how the computer will be able to differentiate between two different ships. Using the function that detects when a ship has been sunk, the index of the sunk ship can be used to filter out the indexes from the list that contains all the hits. This means that all that will remain in the array is indexes of ships that have been hit and not sunk.  An example of this is shown below.
 
