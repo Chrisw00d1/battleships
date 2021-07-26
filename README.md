@@ -13,14 +13,14 @@ I decided to create battleships which you can play [here](https://chrisw00d1.git
 - **Include separate HTML / CSS / JavaScript files**
 - **KISS (Keep It Simple Stupid)** 
 - **DRY (Don't Repeat Yourself)**
-- **Use Javascript for DOM manipulation**
+- **Use JavaScript for DOM manipulation**
 - **Deploy your game online**
 - **Use semantic markup for HTML and CSS**
 
 ### Technologies used
 - **HTML**
 - **CSS**
-- **Javascript**
+- **JavaScript**
 - **Github and Git**
 
 ## Creating the game
@@ -32,7 +32,7 @@ Once I had that sorted I broke the program down into sections to tackle one by o
 2. Getting the player to place their ships with the ability to rotate them
 3. Randomly placing the computer’s ships
 4. Getting the player to fire at the computers grid
-5. Getting the computer to fire back wit some calculated guesses
+5. Getting the computer to fire back with some calculated guesses
 6. Creating a win/lose condition
 7. Reseting the game to be able to play again
 
@@ -44,7 +44,7 @@ I designed the grid based on the original game where the grid is a 10 by 10.  I 
 
 ### Getting the player to place their ships
 
-I split the game into two sections of planning mode and battle mode. This way I could split the code into two sections as well so if I got any errors in one part of the game I could already limit it to a section of my code to look at. I found this to be one of the harder parts to code as bugs continued to show depending on what the user did. First, I implemented it so that the ship would always point down on the grid depending on where the user click. Before it gets displayed on the ship it is put into a function where the indexes to put the ship into are calculated and put into an array. Each index is checked to see if there is a ship already in the index or if it goes off the grid. Each time the user clicks a new div the previous display of the ship is removed. Incase the user clicks an error the function return the previous location instead of having a blank screen again.  Once the ship has been confirmed in the chosen position, the next ship is displayed and the process repeats until the last ship. When a ship has been placed into a div then a class called ‘ship’ gets added to it.
+I split the game into two sections of planning mode and battle mode. This way I could split the code into two sections as well so if I got any errors in one part of the game I could already limit it to a section of my code to look at. I found this to be one of the harder parts to code as bugs continued to show depending on what the user did. First, I implemented it so that the ship would always point down on the grid depending on where the user click. Before it gets displayed on the ship it is put into a function where the indexes of where the ship will be are calculated and put into an array. Each index is checked to see if there is a ship already in the index or if it goes off the grid. Each time the user clicks a new div the previous display of the ship is removed. Incase the user clicks an error the function return the previous location instead of having a blank screen again.  Once the ship has been confirmed in the chosen position, the next ship is displayed and the process repeats until the last ship. When a ship has been placed into a div then a class called ‘ship’ gets added to it.
 
 ![placeship](/images/readmeImages/screenshot2.png)
 
@@ -56,6 +56,8 @@ Once I had it working with with the ships pointing down I added the feature to r
 
 This was a lot easier to implement as two random numbers are generated. One to pick the rotation and one to pick the index in the array to put the ship into. With these two values I am able to use the same function that was used for the player to check if the ships can be placed there. If it can’t be placed then two new numbers are generated. After each ship is placed then all the index are added to an array. This array contains the location of all the ships and is used for determining if a ship has been destroyed.
 
+![computerShipPlacement](/images/readmeImages/screenshot12.png)
+
 ### Getting the user to shoot
 
 Now all the ships have been placed the game is now in “battle mode”. This means the computer’s divs can be selected where a check is made to see if the player has shot at that selected div already and then to confirm the shot. If the div contains the class ‘ship’ then the grid displays a hit or a miss if there is no ship. After a ship has been hit then another check is made to see if the ship has been destroyed. This loops through all the indexes the ship is in and if all of them are hit then a message can be displayed to show which ship has been sunk.
@@ -64,7 +66,7 @@ Now all the ships have been placed the game is now in “battle mode”. This me
 
 ### Calculating the computer’s shot
 
-Since the smallest  ship has a size of two it means the grid can be viewed like a chess board instead. So every other div needs to be shot at instead of all of them and you are still guaranteed to hit all of the ships. This reduces the number of random shots from 100 to 50
+Since the smallest  ship has a size of two it means the grid can be viewed like a chess board instead. So every other div needs to be shot at instead of all of them and you are still guaranteed to hit all of the ships. This reduces the number of random shots from 100 to 50.
 
 ![computershot](/images/readmeImages/screenshot5.png)
 
@@ -82,7 +84,7 @@ I just created two variables either containing the computer’s score or the pla
 
 I was able to get this done with a few days to spare thanks to preplanning the steps required and writing some pseudo code out for it. I was happy with reaching a game that was playable and wanted to focus on improving the visuals and adding sound before trying to do things like improving the computer’s shot process further.
 
-### Visuals snd sounds
+### Visuals and sounds
 
 This took a lot longer than I anticipated as it involved a lot of trial and error when deciding on a design to go for. I wanted the information about the game to be continuously updated as the game was playing which meant that I had to create a lot more DOM elements to display what I wanted. As the game is quite static I wanted add some kind of motion to it. Getting the radar to rotate and display took long time and a lot of attempts to get it acting in a way I am happy with. I also changed how the text gets displayed by making it appear one letter at a time to give it the effect that it is being typed. 
 I combined some sound of a keyboard being typed to enhance this effect. I also added some background music and sound effects of bombs hitting with the option of turning both off incase the player doesn’t want to listen to it.
@@ -96,6 +98,17 @@ When getting other people to play it made it apparent to me that I need to add a
 ## Conclusion
 
 Overall I am really happy with the outcome of this project. I was able to achieve my main goal of getting it working and improving the visuals of it. I got a lot of experience on how to approach a larger project and how to break it down into reasonable steps. I’m glad I focused on getting the game to work before I focused on what the game looks like as that can take up a lot of time.
+
+### Wins and Challenges
+
+I think one of my wins for this project was how I planned it out. I made sure that I had a clear plan for everything I wanted it to do and pseudo coded some of the confusing parts of the code, like how the computer fires, to make sure it made sense before applying it. I was also happy with the visuals by the end of it and getting the radar to work.
+
+Some of the main challenges I encountered came with placing the ship. I found that there were many ways to break the game so that ships would overlap or would not be placed at all but would still allow the user to move onto the next phase. This took up most of my time as if I found one of these issues later on then it took longer to fix as I had to update the new code I had written as well.
+
+### Bugs
+
+- **Sound issues where sometimes the audio doesn't play**
+- **At a smaller screen size the game does not load correctly**
 
 ### Lessons learned
 
